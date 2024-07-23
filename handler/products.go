@@ -2,6 +2,7 @@ package handler
 
 import (
 	//"fmt"
+	"os"
 	"net/http"
 	"strconv"
 
@@ -23,7 +24,7 @@ type Product struct {
 // Build - connect/re-use db connection
 func (p *Product) Build(db *gorm.DB) {
 	if db == nil {
-		p.db = database.GetDB()
+		p.db = database.GetDB(os.Getenv("DBNAME"))
 	} else {
 		p.db = db
 	}
@@ -131,10 +132,15 @@ func (p *Product) GetProducts() (response []model.Product, status int) {
 
 // Clean - clean the table - delete all the records
 func (p *Product) Clean() error {
-	result := p.db.Exec("DELETE FROM " + ProductsTableName)
+	//result := p.db.Exec("DELETE FROM " + ProductsTableName)
+	result := p.db.Exec("DELETE FROM products")
 
 	if result.Error != nil {
 		return result.Error
+	}
+
+	if err := p.db.Where("1 = 1").Delete(&model.Product{}).Error; err != nil {
+		return err
 	}
 
 	return nil
