@@ -26,9 +26,10 @@ var dbClient *gorm.DB
 
 type product model.Product
 
-func InitDB() *gorm.DB {
+func InitDB(dbname string) *gorm.DB {
 
-	db, err := gorm.Open(sqlite.Open("product.db"), &gorm.Config{})
+	//db, err := gorm.Open(sqlite.Open("product.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dbname), &gorm.Config{})
 	if err != nil {
 		log.Println("failed to connect database")
 	}
@@ -38,15 +39,26 @@ func InitDB() *gorm.DB {
 	return dbClient
 }
 
-func GetDB() *gorm.DB {
-	dbClient = InitDB()
+func GetDB(dbname string) *gorm.DB {
+	dbClient = InitDB(dbname)
 	return dbClient
 }
 
-func StartMigration() error {
-	db := GetDB()
+func StartMigration(dbname string) error {
+	db := GetDB(dbname)
 	if err := db.Table("products").AutoMigrate(&product{}); err != nil {
 		log.Println("failed to create DB")
 	}
+	return nil
+}
+
+
+func DropAllTables(dbname string) error {
+	db := GetDB(dbname)
+
+	if err := db.Migrator().DropTable(); err != nil {
+		return err 
+	}
+	log.Warnln("Delete old tables...")
 	return nil
 }
