@@ -24,6 +24,8 @@ RUN go mod download
 
 RUN go build -o /home/nonroot/productinfosys
 
+EXPOSE 5672
+
 EXPOSE 8080
 
 CMD [ "/home/nonroot/productinfosys" ]

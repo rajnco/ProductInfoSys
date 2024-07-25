@@ -18,43 +18,8 @@ import (
 	"product-info/lib/testutils"
 )
 
-/*
-type Product struct {
-	Id          int     `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price"` //UnitPrice
-	Quantity    int     `json:"quantity"`
-	Discount    int     `json:"discount"` //MaxDiscountPercent
-	Country     string  `json:"country"`
-}
-
-var products []*Product
-*/
-
-/*
-
-var (
-	idAccessCounter = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "product_id_access_total",
-			Help: "Total number of times product ids are accessed",
-		},
-		[]string{"id"},
-	)
-)
-
-*/
-
-//var idAccessCounter controller.idAccessCounter
 
 func init() {
-	//products = make([]Product, 0)
-	//products = append(products, &Product{Id: 1, Name: "Product 1", Description: "Table", Price: 100, Quantity: 1000, Discount: 10, Country: "US"})
-	//sender := rmqsender.Connect()
-	//sender := rmqsender.Connect("Produced")
-	//defer sender.Close()
-	//dbname := "products.db"
 	
 	testutils.LoadEnv()
 	dbname := os.Getenv("DBNAME")
@@ -71,8 +36,6 @@ func init() {
 // @description     This is Product Info System Server for Central Warehouse.
 
 func main() {
-
-	//Product := Product{id}
 
 	router := gin.Default()
 
@@ -114,79 +77,3 @@ func main() {
 	router.Run()
 
 }
-
-/*
-func ListProducts(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, products)
-	//return
-}
-
-func GetProduct(c *gin.Context) {
-	id := strings.TrimSpace(c.Param("id"))
-	idInt, _ := strconv.Atoi(id)
-	for idx := 0; idx < len(products); idx++ {
-		if products[idx].Id == idInt {
-			fmt.Println("IDX : ", idx)
-			c.IndentedJSON(http.StatusOK, products[idx])
-			return
-		}
-	}
-	c.JSON(http.StatusBadRequest, gin.H{"error": "no product found"})
-	//return
-}
-
-func UpdateProduct(c *gin.Context) {
-	id := strings.TrimSpace(c.Param("id"))
-	idAccessCounter.WithLabelValues(id).Inc()
-	idInt, _ := strconv.Atoi(id)
-	//sender := rmqsender.Connect()
-	//sender := rmqsender.Connect("Produced")
-	senderUS := rmqsender.Connect("ProducedUS")
-	senderEU := rmqsender.Connect("ProducedEU")
-	//defer sender.Close()
-	defer senderUS.Close()
-	defer senderEU.Close()
-	for idx := 0; idx < len(products); idx++ {
-		if products[idx].Id == idInt {
-			fmt.Println("IDX : ", idx)
-			products[idx].Description = "Chair"
-			productJson, err := json.Marshal(products[idx])
-			if err != nil {
-				log.Fatalf("Json marshalling failed %+v ", err)
-			}
-			//sender.SendMessage(context.Background(), "Product Describtion changed")
-			//senderUS.SendMessage(context.Background(), "Product Describtion changed")
-			//senderEU.SendMessage(context.Background(), "Product Describtion changed")
-			senderUS.SendMessage(context.Background(), string(productJson))
-			senderEU.SendMessage(context.Background(), string(productJson))
-
-			c.IndentedJSON(http.StatusOK, products[idx])
-			return
-		}
-	}
-	c.JSON(http.StatusBadRequest, gin.H{"error": "no product found"})
-}
-	//defer sender.Close()
-	defer senderUS.Close()
-	defer senderEU.Close()
-	for idx := 0; idx < len(products); idx++ {
-		if products[idx].Id == idInt {
-			fmt.Println("IDX : ", idx)
-			products[idx].Description = "Chair"
-			productJson, err := json.Marshal(products[idx])
-			if err != nil {
-				log.Fatalf("Json marshalling failed %+v ", err)
-			}
-			//sender.SendMessage(context.Background(), "Product Describtion changed")
-			//senderUS.SendMessage(context.Background(), "Product Describtion changed")
-			//senderEU.SendMessage(context.Background(), "Product Describtion changed")
-			senderUS.SendMessage(context.Background(), string(productJson))
-			senderEU.SendMessage(context.Background(), string(productJson))
-
-			c.IndentedJSON(http.StatusOK, products[idx])
-			return
-		}
-	}
-	c.JSON(http.StatusBadRequest, gin.H{"error": "no product found"})
-}
-*/

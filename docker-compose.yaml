@@ -5,9 +5,18 @@ services:
       dockerfile: Dockerfile
       context: .
     volumes:
-      - .:/app
+      #- .:/app
+    - type: volume
+      source: product-vol
+      target: /app  
     ports:
     - "8080:8080"
+    - "5672:5672"
+    networks:
+      product-net:
+    #rabbitmq:
+    depends_on:
+      - rabbitmq
   
   rabbitmq:
     image: 'rabbitmq:3.13.6-management-alpine'
@@ -22,7 +31,40 @@ services:
       # that the server will start first!  Telling the pika client library
       # to try multiple times gets around this ordering issue.
       # AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      AMQP_URL: 'amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5'
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
-    #networks:
-      #- network: {}
+      RABBITMQ_NODE_PORT_NUMBER: "5672"
+      RABBITMQ_MANAGEMENT_PORT_NUMBER: "15672"
+      RABBITMQ_MANAGEMENT_BIND_IP: "0.0.0.0"
+      RABBITMQ_CLUSTER_NODE_NAME: "localhost"
+      RABBITMQ_NODE_NAME: "rabbit@localhost"
+      #RABBITMQ_DEFAULT_VHOST: "127.0.0.1"
+      #PORT: 5672
+    networks:
+      product-net:
+      #
+      #
+networks:
+  product-net:
+volumes:
+  product-vol:
+
+# Top level section like Service. networks & volumes are most widely used along with services. network & volume starts before service
+##networks:
+##volumes:        
+##secrets:
+##configs:
+#
+#
+# networks - creates new overlay network that span multiple hosts. driver to specify different network types.
+# // networks:
+# //   over-net:
+# //   driver: overlay
+# //   attachable: true 
+#
+# volumes: creates new volume 
+#
+#
+#
+# https://hub.docker.com/r/bitnami/rabbitmq
