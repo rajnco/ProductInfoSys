@@ -4,7 +4,6 @@ import (
 	"product-info/database/model"
 	"testing"
 	"strconv"
-	//"fmt"
 
 	"github.com/stretchr/testify/assert"
 )

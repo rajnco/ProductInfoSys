@@ -41,7 +41,6 @@ func (p *Product) TotalCount() int64 {
 
 
 // CreateProduct - create new product in database table products
-//func(p *Product) CreateProduct(cproduct *model.CreateProduct) (response model.Product, status int) {	
 func(p *Product) CreateProduct(cproduct *model.Product) (response model.Product, status int) {	
 	tx := p.db.Begin()
 	
@@ -60,7 +59,6 @@ func(p *Product) CreateProduct(cproduct *model.Product) (response model.Product,
 		return
 	}
 	tx.Commit()
-
 	status = http.StatusCreated
 	return
 }
@@ -75,19 +73,12 @@ func (p *Product) UpdateProduct(product *model.Product) (response model.Product,
 		tx.Rollback()
 		return
 	}
-
 	tx.Commit()
-	
-	// status = http.StatusOK
-	// return
 	return p.GetProduct(strconv.Itoa(product.Id))
 }
 
 // GetProduct - get particular product from products list
 func (p *Product) GetProduct(id string) (response model.Product, status int) {
-	//var response model.Product
-
-	//if err := p.db.Model(&model.Product{}).Where("id = ?", id).Find(&response).Error; err != nil {
 	if err := p.db.Where("id = ?", id).Find(&response).Error; err != nil {
 		log.Printf("error retrive product from DB : %v", err)
 		status = http.StatusInternalServerError
@@ -99,21 +90,18 @@ func (p *Product) GetProduct(id string) (response model.Product, status int) {
 
 // DeleteProduct - delete a product ffrom products list
 func (p *Product) DeleteProduct(id string) (status int) {
-
 	var product model.Product
 
 	tx := p.db.Begin()
-
 	if err := p.db.Model(&model.Product{}).Where("id = ?", id).Delete(&product).Error; err != nil {
-	//if err := p.db.Model(&model.Product{}).Clauses(clause.Returning{}).Where("id = ?", id).Delete(&product).Error; err != nil {
 		log.Printf("error delete product from DB : %v", err)
 		status = http.StatusInternalServerError
 		tx.Rollback()
 		return
 	}
-	status = http.StatusOK
-	//fmt.Println("Deleted : %v ", product)
 	tx.Commit()
+
+	status = http.StatusOK
 	return
 }
 

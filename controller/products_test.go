@@ -61,12 +61,8 @@ func TestProucts(t *testing.T){
 
 	
 	// POST
-	//req, err := http.NewRequest("POST", "/product", bytes.NewBuffer(jsonProduct))
 	req, _ := http.NewRequest("POST", "/product", bytes.NewBuffer(jsonProduct))
 	r.ServeHTTP(w, req)
-	//if err != nil {
-	//	t.Errorf("error creating new product : %v ", err)
-	//}
 
 	response := model.Product{}
 
@@ -107,10 +103,6 @@ func TestProucts(t *testing.T){
 	assert.Equal(t, "Product 2", response4[0].Name)
 
 	// PATCH
-
-	//payload := []byte(`{"id": 0, "name": "Product 2", "description": "Table - hand made wooden table - US", 
-	//			"price": 100, "quantity": 100, "discount": 10, "country": "EU", "region": "EU"}`)
-
 	product := model.Product{}
 	product.Id = response.Id
 	product.Name = "Product New"
@@ -144,9 +136,4 @@ func TestProucts(t *testing.T){
 	r.ServeHTTP(w3, req3)
 
 	assert.Equal(t, 200, w3.Code)
-	//t.Errorf("Response Product : %v ", response)
-
 }
-
-
-
