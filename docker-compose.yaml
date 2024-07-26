@@ -88,10 +88,11 @@ services:
     networks:
       product-net:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://rabbitmq:15672"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 10
       #
       #
 networks:
@@ -117,3 +118,5 @@ volumes:
 #
 #
 # https://hub.docker.com/r/bitnami/rabbitmq
+#
+# https://devops.stackexchange.com/questions/12092/docker-compose-healthcheck-for-rabbitmq
