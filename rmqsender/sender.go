@@ -14,7 +14,9 @@ type Sender struct {
 }
 
 func Connect(queueName string) *Sender {
-	connection, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	//connection, err := amqp.Dial("amqp://guest:guest@127.0.0.1:5672/")
+	//connection, err := amqp.Dial("amqp://guest:guest@127.0.0.1:5672/")
+	connection, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 	if err != nil {
 		log.Panicf("failed to connect RabbitMQ : %+v ", err)
 	}
