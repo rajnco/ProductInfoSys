@@ -8,7 +8,7 @@ services:
     volumes:
       #- .:/app
     - type: volume
-      source: product-vol
+      source: product-productinfo-vol
       target: /app  
     ports:
     - "8080:8080"
@@ -19,6 +19,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      #grafana:
     #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
   
   productpromous:
@@ -29,7 +30,7 @@ services:
       context: ../ProductPromoUS/
     volumes:
     - type: volume
-      source: product-vol
+      source: product-promous-vol
       target: /app  
     ports:
     - "8081:8081"
@@ -38,6 +39,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      #grafana:    
     #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
   
   
@@ -49,7 +51,7 @@ services:
       context: ../CustMobilePortalEU/
     volumes:
     - type: volume
-      source: product-vol
+      source: product-mobileeu-vol
       target: /app  
     ports:
     - "8082:8082"
@@ -58,8 +60,46 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      #grafana:
     #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
+ 
+          #grafana:
+    #image: grafana/grafana:11.1.1-ubuntu
+      #container_name: grafana
+      #ports:
+      #- '3000:3000'  
+        #networks:
+      #  product-net:
+
+          #prometheus: 
+          #image: prom/prometheus-linux-amd64:v2.53.1
+          #container_name: prometheus 
+          #ports: 
+          #- '9090:9090' 
+          #networks:
+          # product-net:
+          #command:
+          #- --config.file=/etc/prometheus/prometheus.yml
+          #volumes:
+          #- ./prometheus.yml:/etc/prometheus/prometheus.yml
+          #depends_on:
+          #- cadvisor
   
+          #cadvisor:
+          #image: gcr.io/cadvisor/cadvisor:latest
+          #container_name: cadvisor
+          #ports:
+          #- 8090:8090
+    #volumes:
+    #- /:/rootfs:ro
+    #- /var/run:/var/run:rw
+    #- /sys:/sys:ro
+    #- /var/lib/docker/:/var/lib/docker:ro
+    #depends_on:
+    #- productinfosys
+    #- productpromous
+    #- custmobileeu
+    #- rabbitmq 	     
   
   rabbitmq:
     image: 'rabbitmq:3.13.6-management-alpine'
@@ -98,7 +138,9 @@ services:
 networks:
   product-net:
 volumes:
-  product-vol:
+  product-promous-vol:
+  product-mobileeu-vol:
+  product-productinfo-vol:
 
 # Top level section like Service. networks & volumes are most widely used along with services. network & volume starts before service
 ##networks:
