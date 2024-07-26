@@ -1,7 +1,7 @@
 services:
-  app:
+  productinfosys:
     image: productinfosys
-    container_name: productinfosys
+    container_name: productinfosys-container
     build:
       dockerfile: Dockerfile
       context: .
@@ -17,7 +17,49 @@ services:
       product-net:
     #rabbitmq:
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+    #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
+  
+  productpromous:
+    image: productpromous
+    container_name: productpromous-container
+    build:
+      dockerfile: Dockerfile
+      context: ../ProductPromoUS/
+    volumes:
+    - type: volume
+      source: product-vol
+      target: /app  
+    ports:
+    - "8081:8081"
+    networks:
+      product-net:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
+  
+  
+  custmobileeu:
+    image: custmobileeu
+    container_name: custmobileeu-container
+    build:
+      dockerfile: Dockerfile
+      context: ../CustMobilePortalEU/
+    volumes:
+    - type: volume
+      source: product-vol
+      target: /app  
+    ports:
+    - "8082:8082"
+    networks:
+      product-net:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
+  
   
   rabbitmq:
     image: 'rabbitmq:3.13.6-management-alpine'
@@ -38,13 +80,18 @@ services:
       RABBITMQ_DEFAULT_PASS: "guest"
       RABBITMQ_NODE_PORT_NUMBER: "5672"
       RABBITMQ_MANAGEMENT_PORT_NUMBER: "15672"
-        #RABBITMQ_MANAGEMENT_BIND_IP: "0.0.0.0"
-        #RABBITMQ_CLUSTER_NODE_NAME: "localhost"
-        #RABBITMQ_NODE_NAME: "rabbit@localhost"
+      #RABBITMQ_MANAGEMENT_BIND_IP: "0.0.0.0"
+      #RABBITMQ_CLUSTER_NODE_NAME: "localhost"
+      #RABBITMQ_NODE_NAME: "rabbit@localhost"
       #RABBITMQ_DEFAULT_VHOST: "127.0.0.1"
       #PORT: 5672
     networks:
       product-net:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://rabbitmq:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
       #
       #
 networks:
