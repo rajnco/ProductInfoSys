@@ -57,3 +57,30 @@ spec:
 status:
   currentReplicas: 0
   desiredReplicas: 0
+
+
+
+---    
+#--- k expose deployment productinfosys   productinfosys-svc --port 8080 --target-port=8080 --type NodePort
+#--- k expose deployment productpromous   productpromous-svc --port 8081 --target-port=8081 --type NodePort
+#--- k expose deployment custmobileey     custmobileeu-svc   --port 8082 --target-port=8082 --type NodePort
+---
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: productinfosys
+    backend: one
+  name: productinfosys
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: productinfosys
+    backend: one
+  type: NodePort
