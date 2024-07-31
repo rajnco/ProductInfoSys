@@ -63,13 +63,26 @@ services:
       #grafana:
     #restart: on-failure:5   # no|always|on-failure[:max-retries]|unless-stopped
  
-          #grafana:
-    #image: grafana/grafana:11.1.1-ubuntu
-      #container_name: grafana
-      #ports:
-      #- '3000:3000'  
-        #networks:
-      #  product-net:
+  grafana:
+    image: grafana/grafana:11.1.1-ubuntu
+    container_name: grafana-container
+    ports:
+    - '3000:3000'  
+    networks:
+      product-net:
+
+  telegraf:
+    image: telegraf:1.31-alpine
+    container_name: telegraf-container    
+    ports:
+    - '9100:9100'
+    volumes:
+    - "./config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf"
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    #command:
+    #- "--config.file=/etc/telegraf/telegraf.conf"
+    networks:
+      product-net:
 
   prometheus: 
     image: prometheus
@@ -88,12 +101,13 @@ services:
     command:
     - "--config.file=/etc/prometheus/prometheus.yml"
     volumes:
-    - "./:/etc/prometheus/prometheus.yml"
+    - "./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
     depends_on:
     - productinfosys
     - productpromous
     - custmobileeu
-    #- nodeexporter
+    - telegraf
+    - grafana
 
 
     #nodeexporter:
@@ -123,7 +137,7 @@ services:
   
   rabbitmq:
     image: 'rabbitmq:3.13.6-management-alpine'
-    container_name: 'rabbitmq'  
+    container_name: 'rabbitmq-container'  
     ports:
       # The standard AMQP protocol port
       - '5672:5672'

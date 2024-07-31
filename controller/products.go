@@ -34,6 +34,27 @@ var (
 			Help: "Product Update requested.",
 		},
 	)
+	TotalRequests = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total number of http requests",
+		},
+		[]string{"path"},
+	)
+	TotalHTTPMethods = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_method_total",
+			Help: "Number of request by http method",
+		},
+		[]string{"method"},
+	)
+	HttpDuration = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "http_response_time_seconds", 
+			Help: "Duration of HTTP requests",
+		},
+		[]string{"path"},
+	)
 )
 
 

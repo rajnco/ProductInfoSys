@@ -24,6 +24,9 @@ func init() {
 	testutils.LoadEnv()
 	dbname := os.Getenv("DBNAME")
 	prometheus.MustRegister(controller.IdAccessCounter)
+	prometheus.MustRegister(controller.TotalRequests)
+	prometheus.MustRegister(controller.TotalHTTPMethods)
+	//prometheus.MustRegister(controller.HttpDuration)
 
 	if err := database.InitDB(dbname).Error; err != nil {
 		log.Println("failed to connect db")
@@ -38,6 +41,7 @@ func init() {
 func main() {
 
 	router := gin.Default()
+	router.Use(PrometheusMiddleware())
 
 	// programmatically set swagger info
 	docs.SwaggerInfo.Title = "Product Information System API"
@@ -76,4 +80,15 @@ func main() {
 
 	router.Run()
 
+}
+
+
+func PrometheusMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		timer := prometheus.NewTimer(controller.HttpDuration.WithLabelValues(c.Request.URL.Path))
+		controller.TotalRequests.WithLabelValues(c.Request.URL.Path).Inc()
+		controller.TotalHTTPMethods.WithLabelValues(c.Request.Method).Inc()
+		c.Next()
+		timer.ObserveDuration()
+	}
 }
